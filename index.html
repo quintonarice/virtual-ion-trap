@@ -136,7 +136,7 @@ const chart = new Chart(ctx, {
   label: 'Stable Region',
   data: stabilityRegion(),
   showLine: true,
-  fill: 'origin',
+  fill: 'true',
   backgroundColor: 'rgba(100, 200, 100, 0.3)',
   borderColor: 'rgba(0, 150, 0, 0.9)',
   pointRadius: 0
@@ -162,7 +162,7 @@ const chart = new Chart(ctx, {
       y: {
         title: { display: true, text: 'a parameter' },
         min: 0,
-        max: 0.2
+        max: 0.22
       }
     },
     plugins: {
