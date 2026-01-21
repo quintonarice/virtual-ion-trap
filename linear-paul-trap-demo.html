@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Linear Paul Trap Stability Demo</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background: #f8f9fa;
+  }
+  .controls {
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  .value {
+    font-weight: bold;
+  }
+  canvas {
+    background: white;
+    border: 1px solid #ccc;
+  }
+  .status {
+    margin-top: 15px;
+    font-size: 1.1em;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>Linear Paul Trap: a–q Stability Diagram</h2>
+
+<div class="controls">
+  <label>
+    RF Voltage \(V_{\mathrm{RF}}\) (V):
+    <input type="range" id="vrf" min="10" max="1000" step="10" value="200">
+    <span class="value" id="vrfVal">200</span>
+  </label>
+
+  <label>
+    Ion Mass (amu):
+    <input type="range" id="mass" min="10" max="200" step="1" value="40">
+    <span class="value" id="massVal">40</span>
+  </label>
+</div>
+
+<canvas id="stabilityChart" width="600" height="400"></canvas>
+
+<div class="status" id="statusText"></div>
+
+<script>
+// ----------------------------
+// Physical constants
+// ----------------------------
+const Q = 1.602e-19;         // Charge (C)
+const amu = 1.66054e-27;    // Atomic mass unit (kg)
+const r0 = 1e-3;            // Trap radius (m)
+const Omega = 2 * Math.PI * 20e6; // RF frequency (rad/s)
+
+// ----------------------------
+// Stability boundary (approx)
+// First Mathieu region (a ≈ 0)
+// q < ~0.908
+// ----------------------------
+function stabilityBoundary() {
+  let data = [];
+  for (let q = 0; q <= 1.2; q += 0.01) {
+    data.push({ x: q, y: 0 });
+  }
+  return data;
+}
+
+// ----------------------------
+// Compute q parameter
+// ----------------------------
+function computeQ(Vrf, mass_amu) {
+  const m = mass_amu * amu;
+  return (2 * Q * Vrf) / (m * r0 * r0 * Omega * Omega);
+}
+
+// ----------------------------
+// Chart setup
+// ----------------------------
+const ctx = document.getElementById('stabilityChart').getContext('2d');
+
+const chart = new Chart(ctx, {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'Stable Region (a ≈ 0)',
+        data: stabilityBoundary(),
+        borderColor: 'green',
+        showLine: true,
+        pointRadius: 0
+      },
+      {
+        label: 'Operating Point',
+        data: [{ x: 0.2, y: 0 }],
+        backgroundColor: 'red',
+        pointRadius: 6
+      }
+    ]
+  },
+  options: {
+    scales: {
+      x: {
+        title: { display: true, text: 'q parameter' },
+        min: 0,
+        max: 1.2
+      },
+      y: {
+        title: { display: true, text: 'a parameter' },
+        min: -0.2,
+        max: 0.2
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top'
+      }
+    }
+  }
+});
+
+// ----------------------------
+// UI Update Logic
+// ----------------------------
+function update() {
+  const Vrf = parseFloat(vrf.value);
+  const mass = parseFloat(massSlider.value);
+
+  vrfVal.textContent = Vrf;
+  massVal.textContent = mass;
+
+  const q = computeQ(Vrf, mass);
+
+  chart.data.datasets[1].data[0].x = q;
+  chart.update();
+
+  if (q < 0.908) {
+    statusText.innerHTML = `✅ Stable trapping regime<br>q = ${q.toFixed(3)}`;
+    statusText.style.color = 'green';
+  } else {
+    statusText.innerHTML = `⚠️ Unstable motion<br>q = ${q.toFixed(3)}`;
+    statusText.style.color = 'red';
+  }
+}
+
+// ----------------------------
+// DOM references
+// ----------------------------
+const vrf = document.getElementById('vrf');
+const massSlider = document.getElementById('mass');
+const vrfVal = document.getElementById('vrfVal');
+const massVal = document.getElementById('massVal');
+const statusText = document.getElementById('statusText');
+
+vrf.addEventListener('input', update);
+massSlider.addEventListener('input', update);
+
+// Initial render
+update();
+</script>
+
+</body>
+</html>
