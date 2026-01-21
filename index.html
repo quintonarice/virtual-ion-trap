@@ -100,13 +100,22 @@ const Omega = 2 * Math.PI * 20e6; // RF frequency (rad/s)
 // First Mathieu region (a ≈ 0)
 // q < ~0.908
 // ----------------------------
-function stabilityBoundary() {
-  let data = [];
-  for (let q = 0; q <= 1.2; q += 0.01) {
-    data.push({ x: q, y: 0 });
+function stabilityRegion() {
+  let region = [];
+
+  // Upper boundary
+  for (let q = 0; q <= 0.9; q += 0.01) {
+    region.push({ x: q, y: 0.237 * q * q });
   }
-  return data;
+
+  // Lower boundary (back along a = 0)
+  for (let q = 0.9; q >= 0; q -= 0.01) {
+    region.push({ x: q, y: 0 });
+  }
+
+  return region;
 }
+
 
 // ----------------------------
 // Compute q parameter
@@ -126,12 +135,15 @@ const chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-        label: 'Stable Region (a ≈ 0)',
-        data: stabilityBoundary(),
-        borderColor: 'green',
-        showLine: true,
-        pointRadius: 0
-      },
+  label: 'Stable Region',
+  data: stabilityRegion(),
+  showLine: true,
+  fill: true,
+  backgroundColor: 'rgba(100, 200, 100, 0.3)',
+  borderColor: 'rgba(0, 150, 0, 0.8)',
+  pointRadius: 0
+},
+
       {
         label: 'Operating Point',
         data: [{ x: 0.2, y: 0 }],
@@ -148,10 +160,11 @@ const chart = new Chart(ctx, {
         max: 1.2
       },
       y: {
-        title: { display: true, text: 'a parameter' },
-        min: -0.2,
-        max: 0.2
-      }
+  title: { display: true, text: 'a parameter' },
+  min: 0,
+  max: 0.2
+}
+
     },
     plugins: {
       legend: {
