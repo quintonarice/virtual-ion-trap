@@ -1,39 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Linear Paul Trap Stability Demo</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background: #f8f9fa;
-  }
-  .controls {
-    margin-bottom: 20px;
-  }
-  label {
-    display: block;
-    margin-top: 10px;
-  }
-  .value {
-    font-weight: bold;
-  }
-  canvas {
-    background: white;
-    border: 1px solid #ccc;
-  }
-  .status {
-    margin-top: 15px;
-    font-size: 1.1em;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Linear Paul Trap a–q Stability Demo</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       background: #f8f9fa;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .controls {
+      max-width: 700px;
+      margin: 0 auto 20px auto;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .value {
+      font-weight: bold;
+      margin-left: 10px;
     }
 
     .chart-container {
@@ -48,14 +45,9 @@
       height: 100% !important;
     }
 
-    .controls {
-      max-width: 700px;
-      margin: auto;
-    }
-
     .status {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 15px;
       font-size: 1.1em;
     }
   </style>
@@ -63,13 +55,19 @@
 
 <body>
 
-<h2>Linear Paul Trap: a–q Stability Diagram</h2>
+<h2>Linear Paul Trap: Mathieu Stability Diagram</h2>
 
 <div class="controls">
   <label>
     RF Voltage \(V_{\mathrm{RF}}\) (V):
-    <input type="range" id="vrf" min="10" max="1000" step="10" value="200">
-    <span class="value" id="vrfVal">200</span>
+    <input type="range" id="vrf" min="10" max="1000" step="10" value="300">
+    <span class="value" id="vrfVal">300</span>
+  </label>
+
+  <label>
+    DC Voltage \(U_{\mathrm{DC}}\) (V):
+    <input type="range" id="udc" min="0" max="200" step="5" value="0">
+    <span class="value" id="udcVal">0</span>
   </label>
 
   <label>
@@ -83,32 +81,28 @@
   <canvas id="stabilityChart"></canvas>
 </div>
 
-
 <div class="status" id="statusText"></div>
 
 <script>
-// ----------------------------
-// Physical constants
-// ----------------------------
-const Q = 1.602e-19;         // Charge (C)
-const amu = 1.66054e-27;    // Atomic mass unit (kg)
-const r0 = 1e-3;            // Trap radius (m)
+/* -----------------------------
+   Physical constants
+----------------------------- */
+const Q = 1.602e-19;        // elementary charge (C)
+const amu = 1.66054e-27;   // atomic mass unit (kg)
+const r0 = 1e-3;           // trap radius (m)
 const Omega = 2 * Math.PI * 20e6; // RF frequency (rad/s)
 
-// ----------------------------
-// Stability boundary (approx)
-// First Mathieu region (a ≈ 0)
-// q < ~0.908
-// ----------------------------
+/* -----------------------------
+   Stability region (first Mathieu region)
+   a_max ≈ 0.237 q^2  for q ≲ 0.9
+----------------------------- */
 function stabilityRegion() {
   let region = [];
 
-  // Upper boundary
   for (let q = 0; q <= 0.9; q += 0.01) {
     region.push({ x: q, y: 0.237 * q * q });
   }
 
-  // Lower boundary (back along a = 0)
   for (let q = 0.9; q >= 0; q -= 0.01) {
     region.push({ x: q, y: 0 });
   }
@@ -116,18 +110,22 @@ function stabilityRegion() {
   return region;
 }
 
-
-// ----------------------------
-// Compute q parameter
-// ----------------------------
+/* -----------------------------
+   Compute q and a parameters
+----------------------------- */
 function computeQ(Vrf, mass_amu) {
   const m = mass_amu * amu;
-  return (2 * Q * Vrf) / (m * r0 * r0 * Omega * Omega);
+  return (4 * Q * Vrf) / (m * r0 * r0 * Omega * Omega);
 }
 
-// ----------------------------
-// Chart setup
-// ----------------------------
+function computeA(Udc, mass_amu) {
+  const m = mass_amu * amu;
+  return (8 * Q * Udc) / (m * r0 * r0 * Omega * Omega);
+}
+
+/* -----------------------------
+   Chart setup
+----------------------------- */
 const ctx = document.getElementById('stabilityChart').getContext('2d');
 
 const chart = new Chart(ctx, {
@@ -135,24 +133,25 @@ const chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-  label: 'Stable Region',
-  data: stabilityRegion(),
-  showLine: true,
-  fill: true,
-  backgroundColor: 'rgba(100, 200, 100, 0.3)',
-  borderColor: 'rgba(0, 150, 0, 0.8)',
-  pointRadius: 0
-},
-
+        label: 'Stable Region',
+        data: stabilityRegion(),
+        showLine: true,
+        fill: true,
+        backgroundColor: 'rgba(100, 200, 100, 0.3)',
+        borderColor: 'rgba(0, 150, 0, 0.9)',
+        pointRadius: 0
+      },
       {
         label: 'Operating Point',
-        data: [{ x: 0.2, y: 0 }],
-        backgroundColor: 'red',
+        data: [{ x: 0.3, y: 0.0 }],
+        backgroundColor: 'green',
         pointRadius: 6
       }
     ]
   },
   options: {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         title: { display: true, text: 'q parameter' },
@@ -160,11 +159,10 @@ const chart = new Chart(ctx, {
         max: 1.2
       },
       y: {
-  title: { display: true, text: 'a parameter' },
-  min: 0,
-  max: 0.2
-}
-
+        title: { display: true, text: 'a parameter' },
+        min: 0,
+        max: 0.2
+      }
     },
     plugins: {
       legend: {
@@ -174,43 +172,62 @@ const chart = new Chart(ctx, {
   }
 });
 
-// ----------------------------
-// UI Update Logic
-// ----------------------------
+/* -----------------------------
+   DOM references
+----------------------------- */
+const vrf = document.getElementById('vrf');
+const udc = document.getElementById('udc');
+const massSlider = document.getElementById('mass');
+
+const vrfVal = document.getElementById('vrfVal');
+const udcVal = document.getElementById('udcVal');
+const massVal = document.getElementById('massVal');
+
+const statusText = document.getElementById('statusText');
+
+/* -----------------------------
+   Update logic
+----------------------------- */
 function update() {
   const Vrf = parseFloat(vrf.value);
+  const Udc = parseFloat(udc.value);
   const mass = parseFloat(massSlider.value);
 
   vrfVal.textContent = Vrf;
+  udcVal.textContent = Udc;
   massVal.textContent = mass;
 
   const q = computeQ(Vrf, mass);
+  const a = computeA(Udc, mass);
+
+  const aMax = 0.237 * q * q;
+  const stable = (q <= 0.9 && a >= 0 && a <= aMax);
 
   chart.data.datasets[1].data[0].x = q;
+  chart.data.datasets[1].data[0].y = a;
+  chart.data.datasets[1].backgroundColor = stable ? 'green' : 'red';
+
   chart.update();
 
-  if (q < 0.908) {
-    statusText.innerHTML = `✅ Stable trapping regime<br>q = ${q.toFixed(3)}`;
+  if (stable) {
+    statusText.innerHTML =
+      `✅ Stable trapping regime<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`;
     statusText.style.color = 'green';
   } else {
-    statusText.innerHTML = `⚠️ Unstable motion<br>q = ${q.toFixed(3)}`;
+    statusText.innerHTML =
+      `⚠️ Unstable motion<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`;
     statusText.style.color = 'red';
   }
 }
 
-// ----------------------------
-// DOM references
-// ----------------------------
-const vrf = document.getElementById('vrf');
-const massSlider = document.getElementById('mass');
-const vrfVal = document.getElementById('vrfVal');
-const massVal = document.getElementById('massVal');
-const statusText = document.getElementById('statusText');
-
+/* -----------------------------
+   Event listeners
+----------------------------- */
 vrf.addEventListener('input', update);
+udc.addEventListener('input', update);
 massSlider.addEventListener('input', update);
 
-// Initial render
+/* Initial render */
 update();
 </script>
 
