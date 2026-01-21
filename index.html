@@ -59,6 +59,12 @@
     <input type="range" id="vrf" min="10" max="1000" step="10" value="300">
     <span class="value" id="vrfVal">300</span>
   </label>
+  
+  <label>
+    RF Frequency (MHz):
+    <input type="range" id="freq" min="5" max="40" step="0.5" value="20">
+    <span class="value" id="freqVal">20</span>
+  </label>
 
   <label>
     DC Voltage (U)DC) [V]:
@@ -82,12 +88,44 @@
 
 <script>
 /* -----------------------------
+   Mathieu stability boundaries
+   First stability region
+----------------------------- */
+
+// Left boundary: a ≈ 0.237 q^2
+function leftBoundary() {
+  let data = [];
+  for (let q = 0; q <= 0.9; q += 0.01) {
+    data.push({ x: q, y: 0.237 * q * q });
+  }
+  return data;
+}
+
+// Right boundary: q ≈ 0.908 − 0.58 a
+function rightBoundary() {
+  let data = [];
+  for (let a = 0; a <= 0.22; a += 0.005) {
+    const qMax = 0.908 - 0.58 * a;
+    if (qMax > 0) {
+      data.push({ x: qMax, y: a });
+    }
+  }
+  return data;
+}
+
+/* -----------------------------
    Physical constants
 ----------------------------- */
 const Q = 1.602e-19;
 const amu = 1.66054e-27;
 const r0 = 1e-3;
-const Omega = 2 * Math.PI * 20e6;
+const freqMHz = parseFloat(freq.value);
+const Omega = 2 * Math.PI * freqMHz * 1e6;
+const omegaSec = 0.5 * Omega * Math.sqrt(a + 0.5 * q * q);
+const fSec_kHz = omegaSec / (2 * Math.PI * 1e3);
+statusText.innerHTML +=
+  `<br>Secular frequency ≈ ${fSec_kHz.toFixed(1)} kHz`;
+
 
 /* -----------------------------
    Stability boundary only
@@ -124,12 +162,20 @@ const chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-        label: 'Stability Boundary',
-        data: stabilityBoundary(),
-        showLine: true,
-        borderColor: 'green',
-        pointRadius: 0
-      },
+  label: 'Stability Boundary',
+  data: leftBoundary(),
+  showLine: true,
+  borderColor: 'green',
+  pointRadius: 0
+},
+{
+  label: '',
+  data: rightBoundary(),
+  showLine: true,
+  borderColor: 'green',
+  pointRadius: 0
+},
+,
       {
         label: 'Operating Point',
         data: [{ x: 0.3, y: 0.0 }],
@@ -166,6 +212,9 @@ const massSlider = document.getElementById('mass');
 const vrfVal = document.getElementById('vrfVal');
 const udcVal = document.getElementById('udcVal');
 const massVal = document.getElementById('massVal');
+const freq = document.getElementById('freq');
+const freqVal = document.getElementById('freqVal');
+
 
 const statusText = document.getElementById('statusText');
 
@@ -181,11 +230,15 @@ function update() {
   udcVal.textContent = Udc;
   massVal.textContent = mass;
 
-  const q = computeQ(Vrf, mass);
-  const a = computeA(Udc, mass);
+  const qRight = 0.908 - 0.58 * a;
+const aLeft = 0.237 * q * q;
 
-  const aMax = 0.237 * q * q;
-  const stable = (q <= 0.9 && a >= 0 && a <= aMax);
+const stable =
+  (a >= 0) &&
+  (q >= 0) &&
+  (q <= qRight) &&
+  (a <= aLeft);
+
 
   chart.data.datasets[1].data[0] = { x: q, y: a };
   chart.update();
