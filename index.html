@@ -84,31 +84,25 @@
 /* -----------------------------
    Physical constants
 ----------------------------- */
-const Q = 1.602e-19;        // elementary charge (C)
-const amu = 1.66054e-27;   // atomic mass unit (kg)
-const r0 = 1e-3;           // trap radius (m)
-const Omega = 2 * Math.PI * 20e6; // RF frequency (rad/s)
+const Q = 1.602e-19;
+const amu = 1.66054e-27;
+const r0 = 1e-3;
+const Omega = 2 * Math.PI * 20e6;
 
 /* -----------------------------
-   Stability region (first Mathieu region)
-   a_max ≈ 0.237 q^2  for q ≲ 0.9
+   Stability boundary only
+   a_max ≈ 0.237 q^2
 ----------------------------- */
-function stabilityRegion() {
-  let region = [];
-
+function stabilityBoundary() {
+  let data = [];
   for (let q = 0; q <= 0.9; q += 0.01) {
-    region.push({ x: q, y: 0.237 * q * q });
+    data.push({ x: q, y: 0.237 * q * q });
   }
-
-  for (let q = 0.9; q >= 0; q -= 0.01) {
-    region.push({ x: q, y: 0 });
-  }
-
-  return region;
+  return data;
 }
 
 /* -----------------------------
-   Compute q and a parameters
+   Mathieu parameters
 ----------------------------- */
 function computeQ(Vrf, mass_amu) {
   const m = mass_amu * amu;
@@ -121,7 +115,7 @@ function computeA(Udc, mass_amu) {
 }
 
 /* -----------------------------
-   Chart setup
+   Chart setup (NO FILL)
 ----------------------------- */
 const ctx = document.getElementById('stabilityChart').getContext('2d');
 
@@ -130,104 +124,14 @@ const chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-  label: 'Stable Region',
-  data: stabilityRegion(),
-  showLine: true,
-  fill: 'true',
-  backgroundColor: 'rgba(100, 200, 100, 0.3)',
-  borderColor: 'rgba(0, 150, 0, 0.9)',
-  pointRadius: 0
-},
-,
-      {
-        label: 'Operating Point',
-        data: [{ x: 0.3, y: 0.0 }],
-        backgroundColor: 'red',
-        pointRadius: 6
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        title: { display: true, text: 'q parameter' },
-        min: 0,
-        max: 1.2
+        label: 'Stability Boundary',
+        data: stabilityBoundary(),
+        showLine: true,
+        borderColor: 'green',
+        pointRadius: 0
       },
-      y: {
-        title: { display: true, text: 'a parameter' },
-        min: 0,
-        max: 0.22
-      }
-    },
-    plugins: {
-      legend: {
-        position: 'top'
-      }
-    }
-  }
-});
+      {
 
-/* -----------------------------
-   DOM references
------------------------------ */
-const vrf = document.getElementById('vrf');
-const udc = document.getElementById('udc');
-const massSlider = document.getElementById('mass');
-
-const vrfVal = document.getElementById('vrfVal');
-const udcVal = document.getElementById('udcVal');
-const massVal = document.getElementById('massVal');
-
-const statusText = document.getElementById('statusText');
-
-/* -----------------------------
-   Update logic
------------------------------ */
-function update() {
-  const Vrf = parseFloat(vrf.value);
-  const Udc = parseFloat(udc.value);
-  const mass = parseFloat(massSlider.value);
-
-  vrfVal.textContent = Vrf;
-  udcVal.textContent = Udc;
-  massVal.textContent = mass;
-
-  const q = computeQ(Vrf, mass);
-  const a = computeA(Udc, mass);
-
-  const aMax = 0.237 * q * q;
-  const stable = (q <= 0.9 && a >= 0 && a <= aMax);
-
-  chart.data.datasets[1].data[0].x = q;
-  chart.data.datasets[1].data[0].y = a;
-  
-
-  chart.update();
-
-  if (stable) {
-    statusText.innerHTML =
-      `✅ Stable trapping regime<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`;
-    statusText.style.color = 'green';
-  } else {
-    statusText.innerHTML =
-      `⚠️ Unstable motion<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`;
-    statusText.style.color = 'red';
-  }
-}
-
-/* -----------------------------
-   Event listeners
------------------------------ */
-vrf.addEventListener('input', update);
-udc.addEventListener('input', update);
-massSlider.addEventListener('input', update);
-
-/* Initial render */
-update();
-</script>
 
 </body>
 </html>
