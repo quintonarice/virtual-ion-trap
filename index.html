@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Linear Paul Trap a–q Stability Demo</title>
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -33,14 +32,6 @@
       margin-left: 10px;
     }
 
-    .chart-container {
-      width: 100%;
-      max-width: 700px;
-      height: 420px;
-      margin: auto;
-    }
-
-  
     .status {
       text-align: center;
       margin-top: 15px;
@@ -59,7 +50,7 @@
     <input type="range" id="vrf" min="10" max="1000" step="10" value="300">
     <span class="value" id="vrfVal">300</span>
   </label>
-  
+
   <label>
     RF Frequency (MHz):
     <input type="range" id="freq" min="5" max="40" step="0.5" value="20">
@@ -67,7 +58,7 @@
   </label>
 
   <label>
-    DC Voltage (U)DC) [V]:
+    DC Voltage (U_DC) [V]:
     <input type="range" id="udc" min="0" max="200" step="5" value="0">
     <span class="value" id="udcVal">0</span>
   </label>
@@ -83,16 +74,19 @@
   <canvas id="stabilityChart"></canvas>
 </div>
 
-
 <div class="status" id="statusText"></div>
 
 <script>
 /* -----------------------------
-   Mathieu stability boundaries
-   First stability region
+   Constants
 ----------------------------- */
+const Q = 1.602e-19;
+const amu = 1.66054e-27;
+const r0 = 1e-3;
 
-// Left boundary: a ≈ 0.237 q^2
+/* -----------------------------
+   Stability boundaries
+----------------------------- */
 function leftBoundary() {
   let data = [];
   for (let q = 0; q <= 0.9; q += 0.01) {
@@ -101,59 +95,17 @@ function leftBoundary() {
   return data;
 }
 
-// Right boundary: q ≈ 0.908 − 0.58 a
 function rightBoundary() {
   let data = [];
   for (let a = 0; a <= 0.22; a += 0.005) {
     const qMax = 0.908 - 0.58 * a;
-    if (qMax > 0) {
-      data.push({ x: qMax, y: a });
-    }
+    if (qMax > 0) data.push({ x: qMax, y: a });
   }
   return data;
 }
 
 /* -----------------------------
-   Physical constants
------------------------------ */
-const Q = 1.602e-19;
-const amu = 1.66054e-27;
-const r0 = 1e-3;
-const freqMHz = parseFloat(freq.value);
-const Omega = 2 * Math.PI * freqMHz * 1e6;
-const omegaSec = 0.5 * Omega * Math.sqrt(a + 0.5 * q * q);
-const fSec_kHz = omegaSec / (2 * Math.PI * 1e3);
-statusText.innerHTML +=
-  `<br>Secular frequency ≈ ${fSec_kHz.toFixed(1)} kHz`;
-
-
-/* -----------------------------
-   Stability boundary only
-   a_max ≈ 0.237 q^2
------------------------------ */
-function stabilityBoundary() {
-  let data = [];
-  for (let q = 0; q <= 0.9; q += 0.01) {
-    data.push({ x: q, y: 0.237 * q * q });
-  }
-  return data;
-}
-
-/* -----------------------------
-   Mathieu parameters
------------------------------ */
-function computeQ(Vrf, mass_amu) {
-  const m = mass_amu * amu;
-  return (4 * Q * Vrf) / (m * r0 * r0 * Omega * Omega);
-}
-
-function computeA(Udc, mass_amu) {
-  const m = mass_amu * amu;
-  return (8 * Q * Udc) / (m * r0 * r0 * Omega * Omega);
-}
-
-/* -----------------------------
-   Chart setup (NO FILL)
+   Chart
 ----------------------------- */
 const ctx = document.getElementById('stabilityChart').getContext('2d');
 
@@ -162,20 +114,21 @@ const chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-  label: 'Stability Boundary',
-  data: leftBoundary(),
-  showLine: true,
-  borderColor: 'green',
-  pointRadius: 0
-},
-{
-  label: '',
-  data: rightBoundary(),
-  showLine: true,
-  borderColor: 'green',
-  pointRadius: 0
-},
-,
+        label: 'Stability Boundary',
+        data: leftBoundary(),
+        showLine: true,
+        borderColor: 'green',
+        borderWidth: 2,
+        pointRadius: 0
+      },
+      {
+        label: '',
+        data: rightBoundary(),
+        showLine: true,
+        borderColor: 'green',
+        borderWidth: 2,
+        pointRadius: 0
+      },
       {
         label: 'Operating Point',
         data: [{ x: 0.3, y: 0.0 }],
@@ -189,75 +142,75 @@ const chart = new Chart(ctx, {
     maintainAspectRatio: false,
     scales: {
       x: {
-        title: { display: true, text: 'q parameter' },
         min: 0,
-        max: 1.2
+        max: 1.2,
+        title: { display: true, text: 'q parameter' }
       },
       y: {
-        title: { display: true, text: 'a parameter' },
         min: 0,
-        max: 0.22
+        max: 0.22,
+        title: { display: true, text: 'a parameter' }
       }
     }
   }
 });
 
 /* -----------------------------
-   DOM references
+   DOM
 ----------------------------- */
 const vrf = document.getElementById('vrf');
+const freq = document.getElementById('freq');
 const udc = document.getElementById('udc');
-const massSlider = document.getElementById('mass');
+const mass = document.getElementById('mass');
 
 const vrfVal = document.getElementById('vrfVal');
+const freqVal = document.getElementById('freqVal');
 const udcVal = document.getElementById('udcVal');
 const massVal = document.getElementById('massVal');
-const freq = document.getElementById('freq');
-const freqVal = document.getElementById('freqVal');
-
 
 const statusText = document.getElementById('statusText');
 
 /* -----------------------------
-   Update logic
+   Update
 ----------------------------- */
 function update() {
   const Vrf = parseFloat(vrf.value);
+  const freqMHz = parseFloat(freq.value);
   const Udc = parseFloat(udc.value);
-  const mass = parseFloat(massSlider.value);
+  const m = parseFloat(mass.value) * amu;
 
   vrfVal.textContent = Vrf;
+  freqVal.textContent = freqMHz;
   udcVal.textContent = Udc;
-  massVal.textContent = mass;
+  massVal.textContent = mass.value;
 
-  const qRight = 0.908 - 0.58 * a;
-const aLeft = 0.237 * q * q;
+  const Omega = 2 * Math.PI * freqMHz * 1e6;
 
-const stable =
-  (a >= 0) &&
-  (q >= 0) &&
-  (q <= qRight) &&
-  (a <= aLeft);
+  const q = (4 * Q * Vrf) / (m * r0 * r0 * Omega * Omega);
+  const a = (8 * Q * Udc) / (m * r0 * r0 * Omega * Omega);
 
-
-  chart.data.datasets[1].data[0] = { x: q, y: a };
+  chart.data.datasets[2].data[0] = { x: q, y: a };
   chart.update();
 
+  const qRight = 0.908 - 0.58 * a;
+  const aLeft = 0.237 * q * q;
+  const stable = (a >= 0 && q >= 0 && q <= qRight && a <= aLeft);
+
+  const omegaSec = 0.5 * Omega * Math.sqrt(a + 0.5 * q * q);
+  const fSec_kHz = omegaSec / (2 * Math.PI * 1e3);
+
   statusText.innerHTML = stable
-    ? `✅ Stable trapping regime<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`
+    ? `✅ Stable trapping regime<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}<br>Secular frequency ≈ ${fSec_kHz.toFixed(1)} kHz`
     : `⚠️ Unstable motion<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`;
 }
 
-/* -----------------------------
-   Events
------------------------------ */
 vrf.addEventListener('input', update);
+freq.addEventListener('input', update);
 udc.addEventListener('input', update);
-massSlider.addEventListener('input', update);
+mass.addEventListener('input', update);
 
 update();
 </script>
-
 
 </body>
 </html>
