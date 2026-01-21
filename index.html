@@ -29,6 +29,36 @@
     font-size: 1.1em;
   }
 </style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f8f9fa;
+    }
+
+    .chart-container {
+      width: 100%;
+      max-width: 700px;
+      height: 420px;
+      margin: auto;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .controls {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 1.1em;
+    }
+  </style>
 </head>
 
 <body>
@@ -49,7 +79,10 @@
   </label>
 </div>
 
-<canvas id="stabilityChart" width="600" height="400"></canvas>
+<div class="chart-container">
+  <canvas id="stabilityChart"></canvas>
+</div>
+
 
 <div class="status" id="statusText"></div>
 
