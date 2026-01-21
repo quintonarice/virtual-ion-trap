@@ -59,13 +59,13 @@
 
 <div class="controls">
   <label>
-    RF Voltage \(V_{\mathrm{RF}}\) (V):
+    RF Voltage (V_RF) [V]:
     <input type="range" id="vrf" min="10" max="1000" step="10" value="300">
     <span class="value" id="vrfVal">300</span>
   </label>
 
   <label>
-    DC Voltage \(U_{\mathrm{DC}}\) (V):
+    DC Voltage (U)DC) [V]:
     <input type="range" id="udc" min="0" max="200" step="5" value="0">
     <span class="value" id="udcVal">0</span>
   </label>
@@ -133,18 +133,19 @@ const chart = new Chart(ctx, {
   data: {
     datasets: [
       {
-        label: 'Stable Region',
-        data: stabilityRegion(),
-        showLine: true,
-        fill: true,
-        backgroundColor: 'rgba(100, 200, 100, 0.3)',
-        borderColor: 'rgba(0, 150, 0, 0.9)',
-        pointRadius: 0
-      },
+  label: 'Stable Region',
+  data: stabilityRegion(),
+  showLine: true,
+  fill: 'origin',
+  backgroundColor: 'rgba(100, 200, 100, 0.3)',
+  borderColor: 'rgba(0, 150, 0, 0.9)',
+  pointRadius: 0
+},
+,
       {
         label: 'Operating Point',
         data: [{ x: 0.3, y: 0.0 }],
-        backgroundColor: 'green',
+        backgroundColor: 'red',
         pointRadius: 6
       }
     ]
@@ -205,7 +206,7 @@ function update() {
 
   chart.data.datasets[1].data[0].x = q;
   chart.data.datasets[1].data[0].y = a;
-  chart.data.datasets[1].backgroundColor = stable ? 'green' : 'red';
+  
 
   chart.update();
 
