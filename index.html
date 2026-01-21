@@ -131,6 +131,79 @@ const chart = new Chart(ctx, {
         pointRadius: 0
       },
       {
+        label: 'Operating Point',
+        data: [{ x: 0.3, y: 0.0 }],
+        backgroundColor: 'red',
+        pointRadius: 6
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        title: { display: true, text: 'q parameter' },
+        min: 0,
+        max: 1.2
+      },
+      y: {
+        title: { display: true, text: 'a parameter' },
+        min: 0,
+        max: 0.22
+      }
+    }
+  }
+});
+
+/* -----------------------------
+   DOM references
+----------------------------- */
+const vrf = document.getElementById('vrf');
+const udc = document.getElementById('udc');
+const massSlider = document.getElementById('mass');
+
+const vrfVal = document.getElementById('vrfVal');
+const udcVal = document.getElementById('udcVal');
+const massVal = document.getElementById('massVal');
+
+const statusText = document.getElementById('statusText');
+
+/* -----------------------------
+   Update logic
+----------------------------- */
+function update() {
+  const Vrf = parseFloat(vrf.value);
+  const Udc = parseFloat(udc.value);
+  const mass = parseFloat(massSlider.value);
+
+  vrfVal.textContent = Vrf;
+  udcVal.textContent = Udc;
+  massVal.textContent = mass;
+
+  const q = computeQ(Vrf, mass);
+  const a = computeA(Udc, mass);
+
+  const aMax = 0.237 * q * q;
+  const stable = (q <= 0.9 && a >= 0 && a <= aMax);
+
+  chart.data.datasets[1].data[0] = { x: q, y: a };
+  chart.update();
+
+  statusText.innerHTML = stable
+    ? `✅ Stable trapping regime<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`
+    : `⚠️ Unstable motion<br>a = ${a.toFixed(3)}, q = ${q.toFixed(3)}`;
+}
+
+/* -----------------------------
+   Events
+----------------------------- */
+vrf.addEventListener('input', update);
+udc.addEventListener('input', update);
+massSlider.addEventListener('input', update);
+
+update();
+</script>
 
 
 </body>
