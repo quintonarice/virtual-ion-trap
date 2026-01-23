@@ -37,6 +37,39 @@
       margin-top: 15px;
       font-size: 1.1em;
     }
+    .main-panel {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.chart-panel {
+  flex: 0 0 700px;
+  height: 420px;
+}
+
+.equations-panel {
+  flex: 1;
+  max-width: 300px;
+  background: #ffffff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.equations-panel h3 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.eq-note {
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 10px;
+}
   </style>
 
  <script>
@@ -81,35 +114,35 @@
   </label>
 </div>
 
-<div style="width: 100%; max-width: 700px; height: 420px; margin: auto;">
-  <canvas id="stabilityChart"></canvas>
-</div>
+<div class="main-panel">
 
-<div class="status" id="statusText"></div>
+  <!-- Left: Chart -->
+  <div class="chart-panel">
+    <canvas id="stabilityChart"></canvas>
+    <div class="status" id="statusText"></div>
+  </div>
 
-<hr style="max-width:700px; margin:30px auto;">
+  <!-- Right: Equations -->
+  <div class="equations-panel">
+    <h3>Mathieu Parameters</h3>
 
-<div style="max-width:700px; margin:auto; text-align:center;">
-  <h3>Mathieu Parameters</h3>
-
-  <p>
     \[
     a = \frac{4 Q U}{m r_0^2 \Omega^2}
     \]
-  </p>
 
-  <p>
     \[
     q = \frac{2 Q V_{\mathrm{RF}}}{m r_0^2 \Omega^2}
     \]
-  </p>
 
-  <p style="font-size:0.9em; color:#555;">
-    Here \(U\) is the DC voltage, \(V_{\mathrm{RF}}\) is the RF amplitude,
-    \(m\) is the ion mass, \(r_0\) is the trap radius,
-    and \(\Omega\) is the RF angular frequency.
-  </p>
+    <p class="eq-note">
+      Here \(U\) is the DC voltage, \(V_{\mathrm{RF}}\) is the RF amplitude,
+      \(m\) is the ion mass, \(r_0\) is the trap radius,
+      and \(\Omega\) is the RF angular frequency.
+    </p>
+  </div>
+
 </div>
+
 
   
 <script>
