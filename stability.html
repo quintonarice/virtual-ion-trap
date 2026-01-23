@@ -38,6 +38,17 @@
       font-size: 1.1em;
     }
   </style>
+
+ <script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
 </head>
 
 <body>
@@ -76,6 +87,31 @@
 
 <div class="status" id="statusText"></div>
 
+<hr style="max-width:700px; margin:30px auto;">
+
+<div style="max-width:700px; margin:auto; text-align:center;">
+  <h3>Mathieu Parameters</h3>
+
+  <p>
+    \[
+    a = \frac{4 Q U}{m r_0^2 \Omega^2}
+    \]
+  </p>
+
+  <p>
+    \[
+    q = \frac{2 Q V_{\mathrm{RF}}}{m r_0^2 \Omega^2}
+    \]
+  </p>
+
+  <p style="font-size:0.9em; color:#555;">
+    Here \(U\) is the DC voltage, \(V_{\mathrm{RF}}\) is the RF amplitude,
+    \(m\) is the ion mass, \(r_0\) is the trap radius,
+    and \(\Omega\) is the RF angular frequency.
+  </p>
+</div>
+
+  
 <script>
 /* -----------------------------
    Constants
