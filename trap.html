@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linear Paul Trap</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f8f9fa;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* Container for image and hotspots */
+    .trap-container {
+      position: relative;
+      width: 800px;
+      margin: 0 auto;
+    }
+
+    .trap-container img {
+      width: 100%;
+      border: 2px solid #ccc;
+    }
+
+    /* Generic hotspot */
+    .hotspot {
+      position: absolute;
+      cursor: help;
+    }
+
+    /* Tooltip */
+    .hotspot::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+
+    .hotspot:hover::after {
+      opacity: 1;
+    }
+
+    /* -------- Hotspot locations (tuned for your diagram) -------- */
+
+    /* RF rods */
+    .rf-rod-1 {
+      top: 5%;
+      left: 10%;
+      width: 70%;
+      height: 15%;
+    }
+
+    .rf-rod-2 {
+      bottom: 5%;
+      left: 10%;
+      width: 70%;
+      height: 15%;
+    }
+
+    /* DC endcap electrodes */
+    .endcap-left {
+      top: 40%;
+      left: 5%;
+      width: 15%;
+      height: 20%;
+    }
+
+    .endcap-right {
+      top: 40%;
+      right: 5%;
+      width: 15%;
+      height: 20%;
+    }
+
+    /* Trapping region (CLICKABLE) */
+    .trap-region {
+      top: 42%;
+      left: 42%;
+      width: 16%;
+      height: 16%;
+      cursor: pointer;
+    }
+
+    /* Highlight on hover for trap region */
+    .trap-region:hover {
+      outline: 2px dashed #4a77c9;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h2>Linear Paul Trap</h2>
+
+<div class="trap-container">
+
+  <img src="Paul_Trap_Diagram.png" alt="Linear Paul Trap Diagram">
+
+  <!-- RF rods -->
+  <div class="hotspot rf-rod-1"
+       data-tip="RF electrodes create a quadrupole electric field for radial confinement.">
+  </div>
+
+  <div class="hotspot rf-rod-2"
+       data-tip="Opposing RF electrodes oscillate out of phase to produce transverse confinement.">
+  </div>
+
+  <!-- Endcaps -->
+  <div class="hotspot endcap-left"
+       data-tip="DC endcap electrodes provide axial confinement along the trap axis.">
+  </div>
+
+  <div class="hotspot endcap-right"
+       data-tip="Axial DC confinement defines the ion chain length and spacing.">
+  </div>
+
+  <!-- Trapping region (link) -->
+  <a href="stability.html" class="hotspot trap-region"
+     data-tip="Click to explore stability and operating parameters of the trap.">
+  </a>
+
+</div>
+
+<div class="hint">
+  Hover over components to learn their function.  
+  Click the trapping region to explore the Mathieu stability diagram.
+</div>
+
+</body>
+</html>
 
