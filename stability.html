@@ -134,6 +134,13 @@
   margin-top: 14px;
   font-style: italic;
 }
+.status {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+  font-size: 0.95em;
+  text-align: left;
+}
 
 
     
@@ -185,8 +192,6 @@
 
   <div class="chart-panel">
     <canvas id="stabilityChart"></canvas>
-
-    <div class="status" id="statusText"></div>
   </div>
 
   <div class="equations-panel">
@@ -205,6 +210,8 @@
       \(m\) is the ion mass, \(r_0\) is the trap radius,
       and \(\Omega\) is the RF angular frequency.
     </p>
+
+    <div class="status" id="statusText"></div>
   </div>
 
 </div> <!-- END main-panel -->
