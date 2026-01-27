@@ -95,6 +95,32 @@
   margin-top: 10px;
   font-style: italic;
 }
+.activity-wide {
+  max-width: 1000px;
+  margin: 30px auto 0 auto;
+  padding: 18px 22px;
+  background: #f4f7fb;
+  border-top: 4px solid #4a77c9;
+}
+
+.activity-wide h3 {
+  margin-top: 0;
+  color: #2c4f91;
+  text-align: center;
+}
+
+.activity-wide ul {
+  padding-left: 22px;
+}
+
+.activity-wide li {
+  margin-bottom: 6px;
+}
+
+.activity-wide .reflection {
+  margin-top: 12px;
+  font-style: italic;
+}
 
     
   </style>
@@ -149,25 +175,9 @@
     <div class="status" id="statusText"></div>
   </div>
 
-  <!-- Right: Equations -->
-  <div class="equations-panel">
-    <h3>Mathieu Parameters</h3>
+<div class="activity-wide">
 
-    \[
-    a = \frac{4 Q U}{m r_0^2 \Omega^2}
-    \]
-
-    \[
-    q = \frac{2 Q V_{\mathrm{RF}}}{m r_0^2 \Omega^2}
-    \]
-
-    <p class="eq-note">
-      Here \(U\) is the DC voltage, \(V_{\mathrm{RF}}\) is the RF amplitude,
-      \(m\) is the ion mass, \(r_0\) is the trap radius,
-      and \(\Omega\) is the RF angular frequency.
-    </p>
-<div class="activity-panel">
-  <h4>Sample Learning Activity</h4>
+  <h3>Sample Learning Activity</h3>
 
   <p>
     <strong>Exploring Stability in a Linear Paul Trap</strong>
@@ -202,8 +212,27 @@
     Using the equations above, explain why increasing the RF frequency
     can stabilize the trap even at higher voltages.
   </p>
+
 </div>
 
+  
+  <!-- Right: Equations -->
+  <div class="equations-panel">
+    <h3>Mathieu Parameters</h3>
+
+    \[
+    a = \frac{4 Q U}{m r_0^2 \Omega^2}
+    \]
+
+    \[
+    q = \frac{2 Q V_{\mathrm{RF}}}{m r_0^2 \Omega^2}
+    \]
+
+    <p class="eq-note">
+      Here \(U\) is the DC voltage, \(V_{\mathrm{RF}}\) is the RF amplitude,
+      \(m\) is the ion mass, \(r_0\) is the trap radius,
+      and \(\Omega\) is the RF angular frequency.
+    </p>
     
   </div>
 
