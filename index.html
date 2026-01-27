@@ -11,28 +11,164 @@
       background: #f8f9fa;
     }
 
-    img {
-      max-width: 700px;
-      cursor: pointer;
-      border: 2px solid #ccc;
+    h2 {
+      margin-bottom: 10px;
     }
 
     .hint {
       margin-top: 10px;
       font-style: italic;
     }
+
+    /* Container for image + overlays */
+    .trap-container {
+      position: relative;
+      width: 700px;
+      margin: 0 auto;
+    }
+
+    .trap-container img {
+      width: 100%;
+      border: 2px solid #ccc;
+    }
+
+    /* Generic hotspot */
+    .hotspot {
+      position: absolute;
+      border-radius: 50%;
+      cursor: help;
+    }
+
+    /* Tooltip styling */
+    .hotspot::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+
+    .hotspot:hover::after {
+      opacity: 1;
+    }
+
+    /* -------- Hotspot positions (tuned for your image) -------- */
+
+    /* Paul trap / trapping region (center) */
+    .trap-region {
+      top: 44%;
+      left: 45%;
+      width: 70px;
+      height: 70px;
+    }
+
+    /* Doppler cooling lasers */
+    .laser-left {
+      top: 20%;
+      left: 18%;
+      width: 90px;
+      height: 60px;
+    }
+
+    .laser-right {
+      top: 20%;
+      right: 18%;
+      width: 90px;
+      height: 60px;
+    }
+
+    /* Photoionization laser */
+    .photoionization {
+      top: 5%;
+      left: 45%;
+      width: 80px;
+      height: 60px;
+    }
+
+    /* Fluorescence collection optics */
+    .fluorescence {
+      top: 30%;
+      left: 43%;
+      width: 100px;
+      height: 100px;
+    }
+
+    /* Vacuum pump port */
+    .vacuum-port {
+      top: 45%;
+      right: 2%;
+      width: 90px;
+      height: 70px;
+    }
+
+    /* Oven / electronics */
+    .oven {
+      bottom: 5%;
+      left: 30%;
+      width: 120px;
+      height: 80px;
+    }
+
   </style>
 </head>
+
 <body>
 
 <h2>Virtual Ion Trap</h2>
 
-<a href="stability.html" target="_blank">
-  <img src="Ion_Trap.png" alt="Linear Paul Trap">
-</a>
+<div class="trap-container">
+
+  <img src="Ion_Trap.png" alt="Ion Trap Vacuum Chamber">
+
+  <!-- Trapping region -->
+  <div class="hotspot trap-region"
+       data-tip="Linear Paul trap electrodes confine ions using an RF quadrupole electric field.">
+  </div>
+
+  <!-- Doppler cooling lasers -->
+  <div class="hotspot laser-left"
+       data-tip="397 nm Doppler cooling laser reduces the ion’s kinetic energy.">
+  </div>
+
+  <div class="hotspot laser-right"
+       data-tip="Additional Doppler cooling beam for multi-axis cooling.">
+  </div>
+
+  <!-- Photoionization -->
+  <div class="hotspot photoionization"
+       data-tip="423 nm photoionization laser creates ions from a neutral atomic beam.">
+  </div>
+
+  <!-- Fluorescence -->
+  <div class="hotspot fluorescence"
+       data-tip="Fluorescence collection optics detect photons emitted by the trapped ion.">
+  </div>
+
+  <!-- Vacuum -->
+  <div class="hotspot vacuum-port"
+       data-tip="Vacuum pump maintains ultra-high vacuum to prevent ion loss.">
+  </div>
+
+  <!-- Oven -->
+  <div class="hotspot oven"
+       data-tip="Atomic oven and DC electronics provide neutral atoms and control fields.">
+  </div>
+
+</div>
 
 <div class="hint">
-  Click the trap to explore stability and operating parameters.
+  Hover over components to learn their function.  
+  Click the trap region to explore stability and operating parameters.
 </div>
 
 </body>
